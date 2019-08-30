@@ -108,19 +108,20 @@ export function isPassword(val) {
 }
 
 
-export function objKeySort(obj) {//排序的函数
-  let newkey = Object.keys(obj).sort();
-  //先用Object内置类的keys方法获取要排序对象的属性名，再利用Array原型上的sort方法对获取的属性名进行排序，newkey是一个数组
-  let newObj = {};//创建一个新的对象，用于存放排好序的键值对
-  for (let i = 0; i < newkey.length; i++) {//遍历newkey数组
-    newObj[newkey[i]] = obj[newkey[i]];//向新创建的对象中按照排好的顺序依次增加键值对
-  }
-  let str = '';
-  for (let key in newObj) {
-    str += key + '=' + newObj[key] + '&';
-  }
-  str = str.substring(0,str.length-1);
-  return str;//返回排好序的新对象
+ export function objKeySort(obj) {//排序的函数
+  var newKey=Object.keys(obj).sort();  //是一个数组
+  var newObj={};
+  let str='';
+  newKey.forEach(function(item,index){
+    newObj[item]=obj[item];
+    if(index===newKey.length-1){
+      str+=item+'='+obj[item];
+    }
+    else{
+      str+=item+'='+obj[item]+'&'
+    }
+  });
+  return str;
 }
 //URL验证
 export function url(val){

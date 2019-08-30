@@ -1,6 +1,7 @@
 .el-main{
   padding:0;
 }
-.el-form-item__label{
+.login-container   .el-form-item__label{
   color:#fff;
 }
+
