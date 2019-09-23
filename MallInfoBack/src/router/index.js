@@ -2,7 +2,10 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 Vue.use(Router);
-
+const originalPush = Router.prototype.push;
+Router.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err)
+};
 const router= new Router({
   routes: [
     {
@@ -29,6 +32,7 @@ const router= new Router({
         {
           path:'/management',
           name:'management',
+          component:()=>import('@/views/management/index'),
         redirect:'/management/DeviceList',
           meta:{name:'管理'},
           children:[
@@ -49,14 +53,15 @@ const router= new Router({
         {
           path:'/service',
           name:'service',
+          component:()=>import('@/views/service/index.vue'),
           redirect:'/service/MemberService',
           meta:{name:'会员服务'},
           children:[
             {
               path:'MemberService',
               name:'MemberService',
-              component:()=>import('@/views/service/MemberService.vue'),
-              meta: {requireLogin: true,name:'会员服务'}
+              component: () => import('@/views/service/MemberService'),
+              meta: {requireLogin: true,name:'.会员服务'}
             },
             {
               path:'OnlineUpdate',
@@ -69,6 +74,7 @@ const router= new Router({
         {
           path:'/infoSet',
           name:'infoSet',
+          component:()=>import('@/views/infoSet/index'),
           redirect:'/infoSet/PersonInfo',
           meta:{name:'设置'},
           children:[
@@ -76,7 +82,30 @@ const router= new Router({
               path:'PersonInfo',
               name:'PersonInfo',
               component:()=>import('@/views/infoSet/PersonalInfo.vue'),
-              meta: {requireLogin: true}
+              meta: {requireLogin: true,name:'个人资料'}
+            },{
+              path:'PersonalPsd',
+              name:'PersonalPsd',
+              component:()=>import('@/views/infoSet/PersonalPsd.vue'),
+              meta: {requireLogin: true,name:'密码管理'}
+            },
+            {
+              path:'CompanyInfo',
+              name:'CommpanyInfo',
+              component:()=>import('@/views/infoSet/ComapnyInfo.vue'),
+              meta: {requireLogin: true,name:'公司资料'}
+            },
+            {
+              path:'CompanyConnect',
+              name:'CompanyConnect',
+              component:()=>import('@/views/infoSet/CompanyConnect.vue'),
+              meta: {requireLogin: true,name:'公司联系方式'}
+            },
+            {
+              path:'CompanyAbout',
+              name:'CompanyAbout',
+              component:()=>import('@/views/infoSet/CompanyAbout.vue'),
+              meta: {requireLogin: true,name:'公司介绍'}
             }
           ]
         }
@@ -91,7 +120,7 @@ const router= new Router({
 });
 import store from "../store/index.js";
 router.beforeEach((to,from,next)=>{
-  console.log(to.matched)
+  console.log(to)
   if(to.matched.some(record=>record.meta.requireLogin)){
     if(!store.state.isLogin){
            next('/login')

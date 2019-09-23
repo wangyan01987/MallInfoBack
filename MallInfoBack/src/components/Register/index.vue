@@ -18,6 +18,10 @@
       <el-form-item label="确认密码" prop="checkPass">
         <el-input type="password" v-model="ruleForm.checkPass" autocomplete="off"></el-input>
       </el-form-item>
+      <el-form-item  prop="isAgree">
+       <el-checkbox label="同意" name="isAgree" v-model="ruleForm.isAgree"></el-checkbox>
+        <a href="/static/agreement.html" target="_blank" style="text-decoration: none;color:cornflowerblue;">用户协议条款</a>
+      </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -29,33 +33,33 @@
 <script>
   import {isOnlyMobile, isPassword} from "@/utils/common";
   import  apiRequest from '../../api/ajax.js'
+  //import ajax from "../../api/request.js"
+
 
   const defaultQuery = {
     pass: '',
     checkPass: '',
     code: '',
-    mobile: '',
+    mobile: '15652729797',
     isAgree: ''
   };
   export default {
     name: "register",
     props: {
-
+      'registerType': {
+        type: String,
+        default: '001'
+      }
     },
     data() {
       let validateMobile = async (rule, value, callback) => {
         if (value === '') {
           callback(new Error('请输入手机号'));
         } else {
-          if (isOnlyMobile(value)) {
-            let isR = await this.checkPhone(value);
-            if (isR.code != '000000') {
-              callback(new Error(isR.msg));
-            } else {
-              callback();
-            }
+          if (!isOnlyMobile(value)) {
+             callback(new Error('手机号码格式不正确'))
           } else {
-            callback('请输入11位手机号码');
+            callback();
           }
         }
       };
@@ -85,12 +89,16 @@
       return {
         type: 'primary',
         isDisabled: false,
+        arr:{
+             name:123,
+          age:12
+          },
         ruleForm: {
           pass: '',
           checkPass: '',
           code: '',
           mobile: '',
-          isAgree: ''
+          isAgree: false
         },
         isAgree: false,
         rules: {
@@ -125,30 +133,57 @@
       }
     },
     watch: {
-
+      registerType(val) {
+        if (val === '001') {
+          this.msg = this.msg1;
+        } else {
+          this.msg = this.msg2;
+        }
+      },
       dialogFormVisible() {
         this.ruleForm = JSON.parse(JSON.stringify(defaultQuery));
         this.initData()
+      },
+      arr:{
+        handler(newVal,oldVal){
+          console.log(newVal)
+
+        },
+        deep:true,
+        immediate:true
       }
     },
     mounted() {
+
 
     },
     methods: {
       submitForm(formName) {
         let obj = {};
-        let oData = this.ruleForm;
-        obj.Password = oData.pass;
-        obj.Mobile = oData.mobile;
-        obj.Code = oData.code;
+
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            let url = 'AdminLogin/Adduser';
-            if (this.registerType !== 'registerType') {
-              url = 'AdminLogin/ForgetPassword'
+            let url = 'UserInfoApi/Registered';
+            //忘记密码接口
+            if (this.registerType !== '001') {
+              let oData = this.ruleForm;
+              url = 'UserInfoApi/ResetPassword';
+              obj={};
+              obj.mobile=oData.mobile;
+              obj.password=oData.pass;
+              obj.code=oData.code;
             }
+            else{
+              let oData = this.ruleForm;
+              obj.userPassword = oData.pass;
+              obj.userAccount = oData.mobile;
+              obj.userCode = oData.code;
+              obj.regType='1';
+              obj.userType='2';
+              obj.appCode='com.zhongzhudata.zhongzhu';
+            };
             apiRequest(url, 'POST', obj).then(res => {
-              if (res.code == '000000') {
+              if (res.code === 200) {
                 this.dialogFormVisible = false;
                 this.$message({
                   message: res.msg,
@@ -168,27 +203,32 @@
         });
       },
       async getCode() {
+        let type='';
         if (this.ruleForm.mobile == '' || !isOnlyMobile(this.ruleForm.mobile)) {
           this.$refs.ruleForm.validateField('mobile');
           return;
         }
-        let isR = await this.checkPhone(this.ruleForm.mobile);
-        if (isR.code != '000000') {
-          return;
+        if(this.registerType==='001'){
+  //注册
+          type='2'
+
+        }else{
+          type='4'
+          // let isR = await this.checkPhone(this.ruleForm.mobile);
+          // if (isR.code !== '000000') {
+          //   return;
+          // }
+
         }
-        //发送验证码
-        let type = '2';
-        if (this.registerType != 'registerType') {
-          type = '3';
-        }
-        apiRequest('AdminLogin/SmsSendCodeByType', 'POST', {Type: type, "Phone": this.ruleForm.mobile}).then(res => {
-          if (res.code == '000000') {
+        apiRequest('UserInfoApi/SmsSendCodeByType', 'POST', { "phone": this.ruleForm.mobile,"type": type}).then(res => {
+          if (res.code === '200') {
             this.$message({
               message: res.msg,
               type: 'success'
             });
           }
-        })
+        });
+
         const TIME_COUNT = 60;
         if (!this.timer) {
           this.count = TIME_COUNT;

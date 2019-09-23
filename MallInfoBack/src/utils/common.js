@@ -1,6 +1,6 @@
 // 时间格式化
-export function dateFormat(val) {
-  let date = new Date(val);
+export function dateFormat() {
+  let date = new Date();
   let seperator1 = "-";
   let year = date.getFullYear();
   let month = date.getMonth() + 1;
@@ -95,6 +95,16 @@ export function isOnlyMobile(val) {
     return false;
   }
 }
+//固话
+export function isPhone(val){
+  let reg=/^(\(\d{3,4}\)|\d{3,4}-|\s)?\d{7,14}$/
+ if(reg.test(val.trim())){
+   return true;
+  }
+  else {
+   return false;
+ }
+}
 
 export function isPassword(val) {
   let str = val.trim();
@@ -142,4 +152,29 @@ export function isSocialCreditCode(val) {
   return reg.test(str);
 
 }
+//日期格式化
+//   export function dateFormat(){
+//     Date.prototype.Format = function(fmt){
+//       var o = {
+//         "M+": this.getMonth()+1,
+//         "d+": this.getDate(),
+//         "H+": this.getHours(),
+//         "m+": this.getMinutes(),
+//         "s+": this.getSeconds(),
+//         "S+": this.getMilliseconds()
+//       };
+//       //因为date.getFullYear()出来的结果是number类型的,所以为了让结果变成字符串型，下面有两种方法：
+//       if(/(y+)/.test(fmt)){
+//         //第一种：利用字符串连接符“+”给date.getFullYear()+""，加一个空字符串便可以将number类型转换成字符串。
+//         fmt=fmt.replace(RegExp.$1,(this.getFullYear()+"").substr(4-RegExp.$1.length));
+//       }
+//       for(var k in o){
+//         if (new RegExp("(" + k +")").test(fmt)){
+//           //第二种：使用String()类型进行强制数据类型转换String(date.getFullYear())，这种更容易理解。
+//           fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(String(o[k]).length)));
+//         }
+//       }
+//       return fmt;
+//     };
+//   }
 

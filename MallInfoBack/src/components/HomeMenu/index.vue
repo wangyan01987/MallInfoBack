@@ -1,5 +1,5 @@
 <template>
-    <el-menu default-active="$route.path" @open="handleOpen" @close="handleClose" text-color="#fff" background-color="#304156" :collapse="isCollapse"
+    <el-menu :default-active='$route.path' @open="handleOpen" @close="handleClose" text-color="#fff" background-color="#304156" :collapse="isCollapse"
        router
     >
       <el-menu-item index="/home">
@@ -24,10 +24,10 @@
           <span slot="title">会员服务</span>
         </template>
         <el-menu-item index="/service/MemberService">
-          <span>会员升级</span>
+          <span>会员服务</span>
         </el-menu-item>
         <el-menu-item index="/service/OnlineUpdate">
-          <span>在线服务</span>
+          <span>在线升级</span>
         </el-menu-item>
       </el-submenu>
       <el-submenu index="4">
@@ -38,17 +38,11 @@
         <el-menu-item index="/infoSet/PersonInfo">
           <span>个人资料</span>
         </el-menu-item>
-        <el-menu-item index="/infoSet/PersonPsd">
+        <el-menu-item index="/infoSet/PersonalPsd">
           <span>密码管理</span>
         </el-menu-item>
-        <el-menu-item index="4-3">
+        <el-menu-item index="/infoSet/CompanyInfo">
           <span>公司资料</span>
-        </el-menu-item>
-        <el-menu-item index="4-4">
-          <span>公司联系方式</span>
-        </el-menu-item>
-        <el-menu-item index="4-5">
-          <span>公司介绍</span>
         </el-menu-item>
       </el-submenu>
     </el-menu>
@@ -70,7 +64,11 @@
         handleClose(){
 
         }
+      },
+      mounted(){
+        //  console.log(typeof this.$route.path)
       }
+
     }
 </script>
 

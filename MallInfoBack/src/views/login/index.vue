@@ -9,53 +9,98 @@
        <el-form-item label="密码" prop="passWord">
          <el-input type="password" v-model="formData.passWord" autocomplete="off"></el-input>
        </el-form-item>
+       <el-form-item class="psdAct">
+           <el-checkbox label="十天内免登录"  v-model="formData.autoLogin"></el-checkbox>
+           <span @click="goRegister('002')" >忘记密码?</span>
+       </el-form-item>
        <el-form-item>
          <div class="login-foot">
            <el-button type="primary" @click="submit('formData')">登录</el-button>
          </div>
        </el-form-item>
        <el-form-item class="go-rigister">
-         <span @click="goRegister">立即注册>></span>
+         <span @click="goRegister('001')">立即注册>></span>
        </el-form-item>
      </el-form>
    </div>
-   <register  ref="register">
+   <register  ref="register" :registerType="registerType">
    </register>
  </div>
 </template>
 <script>
-  import register from "@/components/register"
+  import register from "@/components/register";
+  import $ajax from "@/api/ajax.js"
+  import Cookies from 'js-cookie'
   export default {
    data(){
      return {
       formData:{
-        account:'111',
-        passWord:'111111'
+        account:'15652729797',
+        passWord:'abc123',
+        isRegister:false
       },
        rules:{
          passWord:[{required:true,message:'请输入密码',trigger:'blur'}],
          account:[{required:true,message:'请输入账号',trigger:'blur'}],
 
        },
-       isRegister:false
+       registerType:''
+
      }
    },
    components:{register},
     methods:{
      submit(formData){
+       var loginInfo={};
+       loginInfo.userAccount=this.formData.account;
+       loginInfo.userCode=this.formData.passWord;
+       loginInfo.loginType=1;
       this.$refs[formData].validate((valid)=>{
         if(valid){
-          this.$store.commit('changeLogin',true);
-           this.$router.push({name:'home'})
+          $ajax('/UserInfoApi/Login',"POST",loginInfo).then(res=>{
+           if(res.code===200){
+
+             this.$store.commit('changeLogin',true);
+             this.$router.push({name:'home'});
+             this.$message({
+               message: '登录成功',
+               type: 'success'
+             });
+             //保存用户id信息
+             this.$store.commit('setUserId',res.data.id);
+             this.$store.commit('setisVIP',res.data.isVIP);
+             if(this.formData.autoLogin){
+                Cookies.set('userInfo',JSON.stringify(loginInfo),{expires:10,path:''});
+               Cookies.set("isLogin", true, { expires: 10 });
+                }
+                else{
+                  //不设置期限，关闭浏览器。cookie就清除，和session 类似
+               Cookies.set('userInfo',JSON.stringify(loginInfo));
+               Cookies.set("isLogin", true);
+                }
+              }
+              else{
+             this.$message({
+               message:res.msg,
+               type:'error'
+             })
+
+           }
+          })
         //    发送请求
         }else{
           return false;
         }
       })
      },
-      goRegister(){
+      goRegister(code){
+         this.registerType=code;
          this.$refs.register.dialogFormVisible=true;
+
          }
+    },
+    mounted(){
+
     }
   }
   </script>
@@ -82,12 +127,18 @@
   .login-title{
     font-size:1.5rem;
   }
-  .go-rigister {
+  .go-rigister,.psdAct{
     text-align:right;
 
   }
-  .go-rigister span{
+  .go-rigister span,.psdAct span{
     cursor:pointer;
+
+  }
+
+  .el-checkbox{
+    color:#fff;
+    float:left;
   }
 
 

@@ -34,9 +34,10 @@
       },
       methods:{
           loginOut(){
-
-          }
-      }
+              this.$store.commit('changeLogin',false);
+              this.$router.push('/login');
+              }
+    }
     }
 </script>
 

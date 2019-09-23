@@ -9,7 +9,16 @@ const store=new Vuex.Store({
   })],
    state:{
      isLogin:false,
-     isSetInfo:false
+     isSetInfo:false,
+     userInfo:{
+       Mobile:''
+     },
+     userId:'',
+     comId:'',
+     vipTypeId:'',
+     isVIP:''
+
+
    },
   mutations:{
      changeLogin(state,data){
@@ -17,7 +26,23 @@ const store=new Vuex.Store({
      },
     setInfo(state,data){
        state.isSetInfo=data;
+      },
+    setUserInfo(state,data){
+       state.userInfo=data;
+    },
+    setUserId(state,data){
+       state.userId=data;
+    },
+    setComId(state,data){
+       state.comId=data;
+    },
+    setvipTypeId(state,data){
+       state.vipTypeId=data;
+    },
+    setisVIP(state,data){
+       state.isVIP=data;
     }
+
   }
 });
 export default store;

@@ -4,4 +4,53 @@
 .login-container   .el-form-item__label{
   color:#fff;
 }
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+ .avatar-uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+ .avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width:120px;
+  height: 120px;
+  line-height: 120px;
+  text-align: center;
+}
+ .avatar {
+  width: 120px;
+  height: 120px;
+  display: block;
+}
+.area.el-form-item .el-form-item__content{
+  display:flex;
+}
+.area .el-select{
+  margin-right:1rem;
+}
+.release .el-upload.el-upload--text,.release .avatar-uploader-icon{
+  width:180px;
+  height:180px;
+  line-height:180px;
+}
+.release .avatar{
+  width:180px;
+  height:180px;
+}
+.innerForm .el-form-item__content{
+  display:flex;
+  margin:0 !important;
+}
+.el-scrollbar__wrap{
+  overflow-x:hidden;
+}
+.el-scrollbar{
+  height:100%;
+}
+
 
