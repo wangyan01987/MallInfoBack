@@ -34,19 +34,19 @@
   margin-right:1rem;
 }
 .release .el-upload.el-upload--text,.release .avatar-uploader-icon{
-  width:180px;
-  height:180px;
-  line-height:180px;
+  width:150px;
+  height:150px;
+  line-height:150px;
 }
 .release .avatar{
-  width:180px;
-  height:180px;
+  width:150px;
+  height:150px;
 }
 .innerForm .el-form-item__content{
   display:flex;
   margin:0 !important;
 }
-.el-scrollbar__wrap{
+.el-scrollbar__wrap:not(.el-select-dropdown__wrap){
   overflow-x:hidden;
 }
 .el-scrollbar{

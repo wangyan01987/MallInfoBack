@@ -8,7 +8,6 @@
       <el-cascader
         :options="options"
         v-model="formData.pTypeId"
-        @active-item-change="handleItemChange"
         @change="handleChange"
       :props="props">
       </el-cascader>
@@ -92,7 +91,7 @@
     </el-form-item>
     <el-form-item label="创建时间"> {{formData.createTime}}</el-form-item>
     <el-form-item label="上架状态" prop="publishStatus">
-      {{formData.publishStatus}}
+      {{formData.publishStatus===1?'上架':'下架'}}
     </el-form-item>
     <el-form-item label="上架时间" prop="upshelfTime">
          {{formData.upshelfTime}}
@@ -132,6 +131,7 @@
              province:'',
              city:'',
              formData:{
+               id:0,
                name:'挖掘机',
                brandName:'远大',
                cityCode:'',
@@ -155,7 +155,6 @@
 
                }],
                timeLimits:2,
-               pTypeId:[]
 
              },
              imgUrl:'',
@@ -192,9 +191,10 @@
       },
       watch:{
         'formData.provinceCode':{
-          handler(val){
-
-            this.formData.cityCode='';
+          handler(val,oldVal){
+           if(oldVal!==undefined){
+             this.formData.cityCode='';
+           }
                  this.provinceList.forEach((item,index)=>{
                    if(val===item.areaId){
                      this.province=item.areaName;
@@ -205,13 +205,14 @@
           }
         },
         'imgList':{
+
           handler(val){
             let str='';
             val.forEach((item,index)=>{
               str=str+item.id+','
             });
             this.formData.imgUrl=str;
-          }
+          },
         },
         'formData.cityCode'(val){
          for(let i=0;i<this.cityList.length;i++){
@@ -272,12 +273,9 @@
                 return false;
               }
             });
-
            if(a&&b){
-
              var obj=Object.assign({},this.formData);
              delete obj.parameter;
-             obj.id=0;
              obj.verifyStatus=1;
              obj.createTime=dateFormat();
              obj.userId=this.$store.state.userId;
@@ -291,18 +289,24 @@
              obj.oldStock=0;
              obj.pTypeId=obj.pTypeId[0];
              obj.typeId=this.formData.pTypeId[1];
-             obj.sign='12sjdhfhnn';
              if(this.formData.parameter.length!==0){
                this.formData.parameter.forEach(function(item,index){
                  obj[`paraName${index+1}`]=item.name;
                  obj[`paraValue${index+1}`]=item.value;
                });
-             }
-                $ajax('Product/AddProduct','POST',obj).then(res=>{
-                    if(res.data===200){
+             };
+             let url=obj.id===0?'Product/AddProduct':'Product/EditProduct';
+                $ajax(url,'POST',obj).then(res=>{
+                    if(res.code===200){
                       this.$message({
                         message:'提交成功！',
                         type:'success'
+                      })
+                    }
+                    else{
+                      this.$message({
+                        message:res.msg,
+                        type:'error'
                       })
                     }
                 })
@@ -324,47 +328,66 @@
               this.preView=true;
         }
       },
-      mounted(){
-          //获取imgList
+      created(){
         //获取地区列表
-
-          $ajax('Company/GetAllCities','GET').then(res=>{
-               this.provinceList=JSON.parse(res.data);
-          });
-
-          //获取商品列表父级
-        $ajax('ProType/GetValidParentList','GET').then(res=>{
+        $ajax('Company/GetAllCities','GET').then(res=>{
           if(res.code===200){
-             this.options= res.data.map(function(item,index){
-                     item.children=[];
-                     return item;
-              });
+            this.provinceList=JSON.parse(res.data);
           }
         });
-        let pid=this.$route.query.id;
+        //获取商品列表父级
+        $ajax('ProType/GetValidParentList','GET').then(res=>{
+          if(res.code===200){
+            let that=this;
+            // this.options= res.data.map(function(item,index){
+            //           item.children=[];
+            //           return item;
+            //  });
+            res.data.forEach((item,index)=>{
+              ( function getMsg(item){
+                $ajax('ProType/GetValidChildList','GET',{pid:item.id}).then(res1=>{
+                  if(res1.code===200){
+                    item.children=res1.data;
+                    that.options.push(item)
+                  }
+                })
+              })(item);
+
+            })
+          }
+        });
+      },
+      mounted(){
+          //获取imgList
+
+
+        this.preView=this.$route.query.preview;
+        let pid=this.formData.id=this.$route.query.id;
+
         if(pid){
           let that=this;
           $ajax('Product/GetSingleProduct','GET',{proId:pid}).then(res=>{
             if(res.code===200){
               this.formData=res.data;
-              this.imgUrl=this.formData.previewImgUrl;
+
+              this.imgUrl=res.data.previewImgUrl;
+              this.formData.previewImgUrl=this.formData.previewImgUrlIds;
               //轮播图
               let arr= this.formData.imgUrl.split(',');
+              let arrId=this.formData.imgUrlIds.split(',');
+
               arr.forEach(function(item,index){
-                that.imgList.push({name:'',url:item})
+                that.imgList.push({name:'',url:item,id:arrId[index]});
               });
-              this.formData.pTypeId=[this.formData.pTypeId,this.formData.typeId];
+              this.formData.pTypeId=[this.formData.pTypeId,19];
               this.formData.parameter=[{name:res.data.paraName1,value:this.formData.paraValue1},
                 {name:this.formData.paraName2,value:this.formData.paraValue2},
                 {name:this.formData.paraName3,value:this.formData.paraValue3}
-
-
-
               ]
 
 
             }
-          })
+          });
         }
 
       }

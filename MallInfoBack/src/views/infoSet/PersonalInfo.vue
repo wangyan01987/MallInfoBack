@@ -10,7 +10,7 @@
             <el-upload
               ref="upload"
               class="avatar-uploader"
-              :action="baseApi+'OSS/Upload/ImageUpload'"
+              :action="baseApi+'OSSApi/UploadAvatarUrl'"
               :show-file-list="false"
               :on-success="handleAvatarSuccess"
               :before-upload="beforeAvatarUpload">
@@ -112,8 +112,9 @@
 
       return {
         align:'center',
-        baseApi:process.env.BASE_API,
+        baseApi:process.env.Base_URL,
         personInfo:{
+          Avatar:'',
           isAuthen:'',
           Mobile:'1563524389'
         },
@@ -201,14 +202,8 @@
       },
       handleAvatarSuccess(res, file) {
 
-        if(res.code==='0'){
-          //上传图片
-          let info={
-            Mobile:this.personInfo.Mobile,
-            Avatar:res.data.Res_Url,
-            Res_Id:res.data.resid
-          };
-          let URL=res.data.Res_Url;
+        if(res.code===200){
+          this.personInfo.Avatar=res.data;
 
         }
         else{

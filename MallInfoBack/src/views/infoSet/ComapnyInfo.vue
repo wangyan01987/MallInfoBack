@@ -6,6 +6,7 @@
       <el-form :model="companyInfo" ref="companyInfo" label-width="160px" :rules="rules">
         <el-form-item label="公司Logo"  prop="companyUrl" required>
           <el-upload
+            v-if="isEdit"
             class="avatar-uploader"
             :action="imgURL"
             :show-file-list="false"
@@ -14,21 +15,22 @@
             <img  v-if='companyInfo.companyUrl' :src="companyInfo.companyUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
+          <img  v-if='companyInfo.companyUrl&&!isEdit' :src="companyInfo.companyUrl" class="avatar" >
         </el-form-item>
         <el-form-item label="公司名称" prop="comName">
           <el-input v-model="companyInfo.comName" v-if="isEdit"></el-input>
           <span v-else>{{companyInfo.comName?companyInfo.comName:'未设置'}}</span>
         </el-form-item>
         <el-form-item label="所在地区" class="area" prop="area" required>
-      <el-select v-model="companyInfo.area.city" placeholder="请选择省/直辖市" >
+      <el-select v-model="companyInfo.area.city" placeholder="请选择省/直辖市"  :disabled='!isEdit'>
             <el-option v-for="item in areaList"  :value=item.areaId :label=item.areaName :key="item.areaId" >
             </el-option>
           </el-select>
-            <el-select  placeholder="请选择市"  value="" v-model="companyInfo.area.areaCity">
+            <el-select  placeholder="请选择市"  value="" v-model="companyInfo.area.areaCity" :disabled="!isEdit">
               <el-option v-for="item in cityList"  :value=item.areaId :label=item.areaName :key="item.areaId" >
               </el-option>
             </el-select>
-            <el-select placeholder="请选择区" v-model="companyInfo.area.countyCity">
+            <el-select placeholder="请选择区" v-model="companyInfo.area.countyCity" :disabled="!isEdit">
               <el-option v-for="item in areaItemList"  :value=item.areaId :label=item.areaName :key="item.areaId" >
               </el-option>
             </el-select>
@@ -47,6 +49,7 @@
         </el-form-item>
         <el-form-item label="营业执照" prop="businessLicenseUrl">
           <el-upload
+            v-if="isEdit"
             class="avatar-uploader"
             :action="imgURL"
             :show-file-list="false"
@@ -55,6 +58,7 @@
             <img v-if="companyInfo.businessLicenseUrl" :src="companyInfo.businessLicenseUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
+          <img v-if="companyInfo.businessLicenseUrl&&!isEdit" :src="companyInfo.businessLicenseUrl" class="avatar" >
         </el-form-item>
         <el-form-item label="联系人" prop="contactName">
           <el-input v-model="companyInfo.contactName" v-if="isEdit"></el-input>
@@ -71,6 +75,7 @@
         </el-form-item>
         <el-form-item label="法人身份证正面照" prop="idCardUrl">
           <el-upload
+            v-if="isEdit"
             class="avatar-uploader"
             :action='imgURL'
             :show-file-list="false"
@@ -79,6 +84,7 @@
             <img v-if="companyInfo.idCardUrl" :src="companyInfo.idCardUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
+          <img v-if="companyInfo.idCardUrl&&!isEdit" :src="companyInfo.idCardUrl" class="avatar">
         </el-form-item>
         <el-form-item label="法人联系电话" prop="legalPersonPhone">
           <el-input v-model="companyInfo.legalPersonPhone" v-if="isEdit"></el-input>
@@ -207,7 +213,10 @@
         isEdit:false,
         imgURL:imgURL ,
         companyInfo:{
-
+           area:{
+             countyCity:'',
+             areaCity:''
+           }
         },
         isCollase:true,
         areaList:[],
@@ -229,6 +238,19 @@
         }
       }
     },
+    watch:{
+      'companyInfo.area.city':function(val,oldval){
+          if(oldval!==undefined){
+            this.companyInfo.area.areaCity=''
+          }
+      },
+      'companyInfo.area.areaCity':function(val,oldval){
+        if(oldval!==''){
+          this.companyInfo.area.countyCity=''
+        }
+      }
+
+    },
     computed:{
       cityList(){
         var a=this.companyInfo.area.city;
@@ -236,7 +258,6 @@
         let l=this.areaList.length;
         for(let i=0;i<l;i++){
           if(this.areaList[i].areaId===a){
-
             arr=this.areaList[i].cities;
             break;
           }
@@ -246,6 +267,7 @@
       areaItemList(){
         var a=this.companyInfo.area.areaCity;
         var arr=[];
+
         this.cityList.forEach(function(item,index){
           if(item.areaId===a){
             arr=item.counties;
@@ -254,7 +276,6 @@
         return arr;
       },
       checkState(){
-        console.log(this.companyInfo.auditStatus)
         if(this.companyInfo.auditStatus==1){
           return '待审核'
         }

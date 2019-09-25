@@ -27,7 +27,7 @@
             title:'工程设备租赁平台（出租方）',
             headImg:'',
             personInfo:{
-              avatar: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
+              avatar: "",
               name:'北雁南飞'
             }
           }
