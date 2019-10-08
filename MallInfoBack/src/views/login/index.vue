@@ -69,12 +69,14 @@
              //保存用户id信息
              this.$store.commit('setUserId',res.data.id);
              this.$store.commit('setisVIP',res.data.isVIP);
+             this.$store.commit('setUserInfo',res.data);
              if(this.formData.autoLogin){
                 Cookies.set('userInfo',JSON.stringify(loginInfo),{expires:10,path:''});
                Cookies.set("isLogin", true, { expires: 10 });
+               document.cookie="username=John Doe; expires=Thu, 18 Dec 2043 12:00:00 GMT; path=/";
                 }
                 else{
-                  //不设置期限，关闭浏览器。cookie就清除，和session 类似
+                 // 不设置期限，关闭浏览器。cookie就清除，和session 类似
                Cookies.set('userInfo',JSON.stringify(loginInfo));
                Cookies.set("isLogin", true);
                 }
@@ -100,8 +102,21 @@
          }
     },
     mounted(){
+  let userInfo=Cookies.get('userInfo');
+               if(userInfo){
+                userInfo= JSON.parse(userInfo)
+                 $ajax('/UserInfoApi/Login',"POST",userInfo).then(res=>{
+                   if(res.code===200){
+                     this.$store.commit('changeLogin',true);
+                     this.$router.push({name:'home'});
+                     this.$store.commit('setUserId',res.data.id);
+                     this.$store.commit('setisVIP',res.data.isVIP);
+                     this.$store.commit('setUserInfo',res.data);
+                   }
+                 })
+               }
 
-    }
+       }
   }
   </script>
 <style scoped>

@@ -7,62 +7,57 @@
       <p class="title">基本信息</p>
       <el-form :model="connectList" :rules="rules" ref="connectList" label-width="100px"  class="baseInfo">
         <el-form-item label="头像">
+          <img v-if="personInfo.avatarUrl" :src="personInfo.avatarUrl" class="avatar">
             <el-upload
+               v-else
               ref="upload"
               class="avatar-uploader"
               :action="baseApi+'OSSApi/UploadAvatarUrl'"
               :show-file-list="false"
               :on-success="handleAvatarSuccess"
               :before-upload="beforeAvatarUpload">
-              <img v-if="personInfo.Avatar" :src="personInfo.Avatar" class="avatar">
+              <img v-if="personInfo.avatarUrl" :src="personInfo.avatarUrl" class="avatar">
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
-
         </el-form-item>
-        <el-form-item>
+        <el-form-item></el-form-item>
+        <el-form-item label="手机号">
+            {{mobile}}
         </el-form-item>
         <el-form-item label="会员名">
-          <span v-if="!isEdit">{{personInfo.Nickname===''?'未设置':personInfo.Nickname}}</span>
-          <el-input  v-model="connectList.Nickname" v-else>
-          </el-input>
-        </el-form-item>
-        <el-form-item label="手机号">
-            {{personInfo.Mobile}}
-        </el-form-item>
-        <el-form-item label="姓名">
-          <span v-if="!isEdit">{{personInfo.RealName===''?'未设置':personInfo.RealName}}</span>
-          <el-input  v-model="connectList.RealName" v-else></el-input>
+          <span v-if="!isEdit">{{personInfo.nickname===undefined?'未设置':personInfo.nickname}}</span>
+          <el-input  v-model="connectList.nickname" v-else></el-input>
         </el-form-item>
         <el-form-item label="性别">
-          <span v-if="!isEdit">{{personInfo.sex}}</span>
-          <el-radio-group v-model="connectList.sex" v-else>
+          <span v-if="!isEdit">{{gender===undefined?'未设置':gender}}</span>
+          <el-radio-group v-model="gender" v-else>
             <el-radio label="女"></el-radio>
             <el-radio label="男"></el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="部门">
-          <span v-if="!isEdit">{{personInfo.branch}}</span>
-          <el-input  v-model="connectList.branch" v-else></el-input>
+          <span v-if="!isEdit">{{!personInfo.department?'未设置':personInfo.department}}</span>
+          <el-input  v-model="connectList.department" v-else></el-input>
         </el-form-item>
         <el-form-item label="职位">
-          <span v-if="!isEdit">{{personInfo.assign}}</span>
-          <el-input  v-model="connectList.assign" v-else></el-input>
+          <span v-if="!isEdit">{{!personInfo.position?'未设置':personInfo.position}}</span>
+          <el-input  v-model="connectList.position" v-else></el-input>
         </el-form-item>
-        <el-form-item label="邮箱" prop="Email">
-          <span v-if="!isEdit">{{personInfo.Email===''?'未设置':personInfo.Email}}</span>
-          <el-input  v-model="connectList.Email" v-else></el-input>
+        <el-form-item label="邮箱" prop="email">
+          <span v-if="!isEdit">{{!personInfo.email?'未设置':personInfo.email}}</span>
+          <el-input  v-model="connectList.email" v-else></el-input>
         </el-form-item>
-        <el-form-item label="QQ" prop="QQ">
-          <span v-if="!isEdit">{{personInfo.QQ===''?'未设置':personInfo.QQ}}</span>
-          <el-input  v-model="connectList.QQ" v-else></el-input>
+        <el-form-item label="qq" prop="qq">
+          <span v-if="!isEdit">{{!personInfo.qq?'未设置':personInfo.qq}}</span>
+          <el-input  v-model="connectList.qq" v-else></el-input>
         </el-form-item>
-        <el-form-item label="阿里旺旺" prop="ali">
-          <span v-if="!isEdit">{{personInfo.ali==''?'未设置':personInfo.ali}}</span>
-          <el-input  v-model="connectList.ali" v-else></el-input>
+        <el-form-item label="阿里旺旺" prop="alitalk">
+          <span v-if="!isEdit">{{!personInfo.alitalk?'未设置':personInfo.alitalk}}</span>
+          <el-input  v-model="connectList.alitalk" v-else></el-input>
         </el-form-item>
-        <el-form-item label="微信" prop="weixin">
-          <span v-if="!isEdit">{{personInfo.weixin==''?'未设置':personInfo.weixin}}</span>
-          <el-input  v-model="connectList.weixin" v-else></el-input>
+        <el-form-item label="微信" prop="wechat">
+          <span v-if="!isEdit">{{!personInfo.wechat?'未设置':personInfo.wechat}}</span>
+          <el-input  v-model="connectList.wechat" v-else></el-input>
         </el-form-item>
         <el-form-item>
         </el-form-item>
@@ -96,7 +91,7 @@
 
     data:function(){
       var emailValidator=(rule,value,callback)=>{
-        if(value.length!==0){
+        if(value){
           if(!email(value)){
             callback(new Error('邮箱格式不正确'));
           }
@@ -111,86 +106,109 @@
       };
 
       return {
+        personInfo:{
+          email:'',
+          nickname:'',
+          gender:0,
+          department:'',
+          position:'',
+          qq:'',
+          alitalk:'',
+          wechat:''
+        },
         align:'center',
         baseApi:process.env.Base_URL,
-        personInfo:{
-          Avatar:'',
-          isAuthen:'',
-          Mobile:'1563524389'
-        },
         msg:'',
         connectList:{
-          Email:''
+
         },
         isEdit:false,
         rules:{
-          Email: [{validator:emailValidator,trigger:'blur'}]
+          email: [{validator:emailValidator,trigger:'blur'}]
         },
-        gridData:[]
+        gridData:[],
       }
     },
 
-    mounted(){
-      //
-       var mobile=this.$store.state.userInfo.Mobile;
-      api('PersonalCenterApi/DeveloperUserByMobile','POST',{Mobile:mobile}).then(res=>{
-        if(res.code==='000000'){
-          this.personInfo=res.data;
-          var gender=this.personInfo.Gender;
-          if(gender==='M'){
-            this.personInfo.sex='女'
-          }
-          else if(gender==='F'){
-            this.personInfo.sex='男';
-          }
-          let {Mobile,Nickname,Email,Gender,sex,RealName}=this.personInfo;
-          this.connectList={Mobile,Nickname,Email,Gender,sex,RealName};
-        }
 
-      });
+    mounted(){
+      let userId=this.$store.state.userId;
+    this.$ajax('UserInfoAdminApi/GetUBiase','GET',{uid:userId}).then(res=>{
+      if(res.code===200){
+        this.personInfo=res.data;
+        this.connectList=res.data;
+      }
+    })
+
 
     },
     computed:{
+      mobile(){
+        return this.$store.state.userInfo.mobile;
+      },
+      gender:{
+        get(){
+          switch (this.connectList.gender){
+            case 1:return '男';
+            case 2:return '女';
+            case 0:return '';
+          }
+        },
+        set(val){
+
+          switch (val){
+            case '男':this.connectList.gender=1;break;
+            case '女':this.connectList.gender=2;break;
+            case'':this.connectList.gender=0;break;
+          }
+  }
+
+      }
+
     },
     methods:{
-      stateChange(val){
-        this.personInfo.IsNoAuthentication=val;
-      },
-      gotoAuthen(){
-        this.$refs.authen.dialogVisible=true;
-      },
+
       save(){
+
         this.$refs.connectList.validate((valid)=>{
-          if(valid){
+
             //发送保存信息
-            this.personInfo.sex=this.connectList.sex;
-            switch (this.connectList.sex){
-              case'女':this.connectList.Gender='M';break;
-              case'男':this.connectList.Gender='F';break;
-            }
-            delete   this.connectList.sex;
-            // api('PersonalCenterApi/EditDeveloperUserBaseInfo','POST',this.connectList).then(res=>{
-            //   if(res.code==='000000'){
-            //     this.$message({
-            //       type:'success',
-            //       message:res.msg
-            //     });
-            //     this.personInfo.Nickname= this.connectList.Nickname;
-            //     this.personInfo.Email=this.connectList.Email;
-            //     this.personInfo.Gender= this.connectList.Gender;
-            //     this.personInfo.RealName=this.connectList.RealName;
-            //     this.$store.commit('getUserInfo',this.personInfo);
-            //     Cookies.set('userInfo',JSON.stringify(this.personInfo),{expires: 7})
-            //     this.isEdit=false;
-            //   }
-            //   else{
-            //     this.$message({
-            //       type:'error',
-            //       message:res.msg
-            //     });
-            //     return false;
-            //   }
-            // });
+            let obj=Object.assign({},this.connectList);
+
+            obj.userId=this.$store.state.userId;
+            obj.mobile=this.mobile;
+            delete obj.createTime;
+            delete obj.id;
+            delete obj.nickname;
+            Object.keys(obj).forEach(function(item,index){
+                if(obj[item]===''||obj[item]===null){
+                  delete obj[item];
+                }
+            });
+          if(valid){
+               this.$ajax('UserInfoAdminApi/EditInfo','POST',obj).then(res=>{
+                 if(res.code===200){
+                     this.$message({
+                       message:'编辑成功',
+                       type:'success'
+                     });
+                     this.isEdit=false;
+                     this.personInfo=this.connectList;
+                     if(this.personInfo.nickname){
+                       this.$store.state.userInfo.nickname=this.personInfo.nickname;
+                     };
+                     if(this.personInfo.avatarUrl){
+                       this.$store.state.userInfo.avatarUrl=this.personInfo.avatarUrl;
+                     }
+
+                 }
+                 else{
+                      this.$message({
+                        message:res.msg,
+                        type:'error'
+                      })
+                 }
+               })
           }
           else{
             return false;
@@ -203,7 +221,8 @@
       handleAvatarSuccess(res, file) {
 
         if(res.code===200){
-          this.personInfo.Avatar=res.data;
+          this.personInfo.avatarUrl=res.data;
+          this.connectList.avatarUrl=res.data;
 
         }
         else{

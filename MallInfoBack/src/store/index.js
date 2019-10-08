@@ -1,6 +1,5 @@
 import Vue from "vue";
 import Vuex from "vuex"
-Vue.use(Vuex);
 import createPersistedState from "vuex-persistedstate"
 Vue.use(Vuex);
 const store=new Vuex.Store({
@@ -11,7 +10,7 @@ const store=new Vuex.Store({
      isLogin:false,
      isSetInfo:false,
      userInfo:{
-       Mobile:''
+
      },
      userId:'',
      comId:'',

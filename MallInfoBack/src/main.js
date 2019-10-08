@@ -5,18 +5,20 @@ import App from './App'
 import router from './router'
 import ElementUI from "element-ui"
 import 'element-ui/lib/theme-chalk/index.css'
+import "./assets/el-modify.css";
 import store from "./store/index.js"
 
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
-
-
-
+ import $ajax from './api/ajax.js';
+ Vue.prototype.$ajax=$ajax;
 /* eslint-disable no-new */
-new Vue({
+let vm=new Vue({
   el: '#app',
   router,
   store,
   components: { App },
   template: '<App/>'
 });
+
+

@@ -12,29 +12,34 @@
         <span @click="loginOut()">退出</span>
       </div>
       <div class="person-info">
-        <el-avatar :size="50" :src="personInfo.avatar"></el-avatar>
-        <span>欢迎您，{{personInfo.name}}</span>
+        <el-avatar :size="50" :src="userInfo.avatarUrl"></el-avatar>
+        <span>欢迎您，{{userInfo.nickname?userInfo.nickname:'用户'}}</span>
       </div>
 
     </div>
 </template>
 
 <script>
+  import Cookie from 'js-cookie'
     export default {
         name: "index",
       data:function(){
           return{
             title:'工程设备租赁平台（出租方）',
             headImg:'',
-            personInfo:{
-              avatar: "",
-              name:'北雁南飞'
-            }
+
           }
+      },
+      computed:{
+            userInfo(){
+              return this.$store.state.userInfo;
+            }
       },
       methods:{
           loginOut(){
               this.$store.commit('changeLogin',false);
+               //清除cookie
+                Cookie.remove('userInfo');
               this.$router.push('/login');
               }
     }

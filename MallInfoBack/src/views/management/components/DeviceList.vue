@@ -8,7 +8,6 @@
         :options="options"
         v-model="searchInfo.typeId"
         @active-item-change="handleItemChange"
-        @change="handleChange"
         :props="props"
         :clearable=true
       >

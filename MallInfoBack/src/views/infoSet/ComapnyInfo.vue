@@ -289,8 +289,7 @@
     },
     methods:{
       getData(content){
-        this.companyInfo.content=content;
-        console.log(content)
+        this.companyInfo.introduce=content;
       },
       handleAvatarSuccess(res,file){
         if(res.code===200){
@@ -324,9 +323,10 @@
             $ajax('Company/EditCompanyInfo','POST',obj).then(res=>{
               if(res.code===200){
                 this.$message({
-                  message:'编辑成功',
+                  message:'提交成功',
                   type:'success'
                 });
+                this.isEdit=false;
               }
             });
           }
@@ -380,7 +380,6 @@
             let obj=res.data;
             this.$store.commit('setComId',obj.id);
             this.companyInfo=obj;
-
             this.$set(this.companyInfo,'area',{});
             this.$set(this.companyInfo.area,'city',obj.provinceCode)
             this.$set(this.companyInfo.area,'areaCity',obj.cityCode)

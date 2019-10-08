@@ -1,7 +1,6 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-
-Vue.use(Router);
+import vue from 'vue'
+import Router from 'vue-router';
+vue.use(Router);
 const originalPush = Router.prototype.push;
 Router.prototype.push = function push(location) {
   return originalPush.call(this, location).catch(err => err)
@@ -120,7 +119,7 @@ const router= new Router({
 });
 import store from "../store/index.js";
 router.beforeEach((to,from,next)=>{
-  console.log(to)
+  console.log('------')
   if(to.matched.some(record=>record.meta.requireLogin)){
     if(!store.state.isLogin){
            next('/login')

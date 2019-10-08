@@ -4,7 +4,6 @@
       <el-form-item label="当前密码" prop="currentInfo">
         <el-input v-model="psdInfo.currentInfo" type="password" >
         </el-input>
-
       </el-form-item>
       <el-form-item label="新密码" prop="newInfo">
         <el-input v-model="psdInfo.newInfo" type="password">
@@ -15,7 +14,7 @@
       </el-form-item>
         <el-form-item>
           <el-button type="default" @click="cancel">取消</el-button>
-          <el-button type="primary" @click="save('psdInfo')">保存</el-button>
+          <el-button type="primary" @click="save">保存</el-button>
         </el-form-item>
     </el-form>
 
@@ -24,7 +23,6 @@
 
 <script>
   import {isPassword} from "@/utils/common";
-  import  $ajax  from '@/api/ajax.js'
     export default {
         name: "PersonalPsd",
       data(){
@@ -39,9 +37,7 @@
               if(this.psdInfo.newInfo!==''){
                 this.$refs.psdInfo.validateField('reInfo');
               }
-              else{
-                callback();
-              }
+              callback();
             }
 
           };
@@ -58,25 +54,33 @@
           };
           return{
             psdInfo:{
+              currentInfo:'',
+              newInfo:'',
+              reInfo:''
 
             },
             rules:{
               currentInfo:[{required:true,trigger:'blur',message:'请输入当前密码'}],
-              newInfo:[{required:true,trigger:'blur',message:'请输入新密码'},
-                {validator:validatePass,trigger:'blur'}
+              newInfo:[
+                {required:true,trigger:'blur',message:'请输入新密码'},
+               {validator:validatePass,trigger:'blur'}
 
               ],
-              reInfo:[{required:true,trigger:'blur',message:'请再次输入新密码'},
-                {validator:validateNew,trigger:'blur'}]
+              reInfo:[
+                {required:true,trigger:'blur',message:'请再次输入新密码'},
+                {validator:validateNew,trigger:'blur'}
+              ]
             }
           }
       },
       methods:{
-          save(psdInfo){
-
-            this.$refs[psdInfo].validate((valid)=>{
+          save(){
+            this.$refs.psdInfo.validate((valid)=>{
               if(valid){
-                 $ajax('UserInfoApi/ResetPassword','POST',{}).then(res=>{
+                let mobile=this.$store.state.userInfo.mobile;
+                let pwd=this.psdInfo.currentInfo;
+                let conPwd=this.psdInfo.newInfo;
+                 this.$ajax('UserInfoAdminApi/EditPwd','POST',{mobile:mobile,pwd:pwd,conPwd:conPwd}).then(res=>{
                    if(res.code===200){
                      this.$message({
                        message:'修改成功！',
@@ -101,6 +105,9 @@
         cancel(){
             this.$refs.psdInfo.resetFields();
         }
+      },
+      mounted(){
+
       }
 
     }

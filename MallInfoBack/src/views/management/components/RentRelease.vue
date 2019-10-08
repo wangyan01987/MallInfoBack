@@ -1,5 +1,6 @@
 <template>
  <div class="container release">
+
 <h2 v-if="!preView">发布出租信息</h2>
    <h2 v-else>发布出租信息/预览</h2>
   <el-form :model="formData" :rules="rules" label-width="180px" ref="formData" v-show="!preView">
@@ -276,6 +277,8 @@
            if(a&&b){
              var obj=Object.assign({},this.formData);
              delete obj.parameter;
+             obj.id=obj.id||0;
+             console.log(obj.id);
              obj.verifyStatus=1;
              obj.createTime=dateFormat();
              obj.userId=this.$store.state.userId;
@@ -324,9 +327,15 @@
         handleChange(val){
 
         },
+
         preview(){
               this.preView=true;
         }
+      },
+      computed:{
+          comId(){
+            return this.$store.state.userInfo.comId;
+          }
       },
       created(){
         //获取地区列表
@@ -358,9 +367,6 @@
         });
       },
       mounted(){
-          //获取imgList
-
-
         this.preView=this.$route.query.preview;
         let pid=this.formData.id=this.$route.query.id;
 
@@ -384,12 +390,15 @@
                 {name:this.formData.paraName2,value:this.formData.paraValue2},
                 {name:this.formData.paraName3,value:this.formData.paraValue3}
               ]
-
-
             }
           });
-        }
+        };
+     if(!this.comId){
 
+       this.$alert('<p>您还未完善公司信息，点击前往 <a href="#/infoSet/CompanyInfo">填写公司信息</a></p>', '提示', {
+         dangerouslyUseHTMLString: true
+       })
+        }
       }
     }
 </script>
